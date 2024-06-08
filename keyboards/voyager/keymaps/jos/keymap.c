@@ -181,6 +181,41 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   return true;
 }
 
+bool is_alpha_keycode(uint16_t keycode) {
+	switch (keycode) {
+		case QK_MOD_TAP ... QK_MOD_TAP_MAX:
+		case QK_LAYER_TAP ... QK_LAYER_TAP_MAX:
+			keycode &= 0xFF;
+	}
+
+	return keycode >= KC_A && keycode <= KC_Z;
+}
+
+#define IS_LEFT_HAND(r)      (r < MATRIX_ROWS / 2)
+#define IS_ALPHA_ROW(r)      (r % (MATRIX_ROWS / 2) > 0 && r % (MATRIX_ROWS / 2) < MATRIX_ROWS / 2 - 1)
+
+// Opposite hand rule applied to hold taps with alpha codes on rows excluding the first and the last
+bool achordion_chord(uint16_t tap_hold_keycode, keyrecord_t* tap_hold_record,
+    uint16_t other_keycode, keyrecord_t* other_record) {
+
+	int tap_hold_row = tap_hold_record->event.key.row;
+
+	if (!(IS_ALPHA_ROW(tap_hold_row) && is_alpha_keycode(tap_hold_keycode)))
+		return true;
+
+	int other_row = other_record->event.key.row;
+
+	if (!(IS_ALPHA_ROW(other_row) && is_alpha_keycode(other_keycode)))
+		return true;
+
+	return IS_LEFT_HAND(tap_hold_row) != IS_LEFT_HAND(other_row);
+}
+
+// Achordion is applied only to tap holds with alpha codes; it times out after 1000ms
+uint16_t achordion_timeout(uint16_t tap_hold_keycode) {
+	return is_alpha_keycode(tap_hold_keycode)? 1000 : 0;
+}
+
 void matrix_scan_user(void) {
     achordion_task();
 }
