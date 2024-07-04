@@ -7,7 +7,12 @@ enum custom_keycodes {
   RGB_SLD = ML_SAFE_RANGE,
 };
 
-
+typedef struct {
+    uint16_t tap;
+    uint16_t hold;
+    uint16_t held;
+} tap_dance_tap_hold_t;
+tap_dance_action_t *action;
 
 enum tap_dance_codes {
   DANCE_0,
@@ -80,21 +85,6 @@ combo_t key_combos[COMBO_COUNT] = {
     COMBO(combo4, LALT(LGUI(LCTL(LSFT(KC_W))))),
     COMBO(combo5, LGUI(KC_2)),
 };
-
-uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
-    switch (keycode) {
-        case MT(MOD_LGUI, KC_A):
-            return g_tapping_term + 50;
-        case MT(MOD_LSFT, KC_T):
-            return g_tapping_term -30;
-        case MT(MOD_LSFT, KC_N):
-            return g_tapping_term -30;
-        case MT(MOD_RGUI, KC_O):
-            return g_tapping_term + 50;
-        default:
-            return g_tapping_term;
-    }
-}
 
 extern rgb_config_t rgb_matrix_config;
 
@@ -169,9 +159,16 @@ bool rgb_matrix_indicators_user(void) {
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   if (!process_achordion(keycode, record))
       return false;
-
+  
   switch (keycode) {
 
+    case TD(DANCE_0):
+        action = &tap_dance_actions[TD_INDEX(keycode)];
+        if (!record->event.pressed && action->state.count && !action->state.finished) {
+            tap_dance_tap_hold_t *tap_hold = (tap_dance_tap_hold_t *)action->user_data;
+            tap_code16(tap_hold->tap);
+        }
+        break;
     case RGB_SLD:
       if (record->event.pressed) {
         rgblight_mode(1);
@@ -180,6 +177,41 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   }
   return true;
 }
+
+void tap_dance_tap_hold_finished(tap_dance_state_t *state, void *user_data) {
+    tap_dance_tap_hold_t *tap_hold = (tap_dance_tap_hold_t *)user_data;
+
+    if (state->pressed) {
+        if (state->count == 1
+#ifndef PERMISSIVE_HOLD
+            && !state->interrupted
+#endif
+        ) {
+            register_code16(tap_hold->hold);
+            tap_hold->held = tap_hold->hold;
+        } else {
+            register_code16(tap_hold->tap);
+            tap_hold->held = tap_hold->tap;
+        }
+    }
+}
+
+void tap_dance_tap_hold_reset(tap_dance_state_t *state, void *user_data) {
+    tap_dance_tap_hold_t *tap_hold = (tap_dance_tap_hold_t *)user_data;
+
+    if (tap_hold->held) {
+        unregister_code16(tap_hold->held);
+        tap_hold->held = 0;
+    }
+}
+
+#define ACTION_TAP_DANCE_TAP_HOLD(tap, hold) \
+    { .fn = {NULL, tap_dance_tap_hold_finished, tap_dance_tap_hold_reset}, .user_data = (void *)&((tap_dance_tap_hold_t){tap, hold, 0}), }
+
+
+tap_dance_action_t tap_dance_actions[] = {
+        [DANCE_0] = ACTION_TAP_DANCE_TAP_HOLD(LALT(KC_ESCAPE), KC_LEFT_ALT),
+};
 
 bool is_alpha_keycode(uint16_t keycode) {
 	switch (keycode) {
@@ -219,75 +251,3 @@ uint16_t achordion_timeout(uint16_t tap_hold_keycode) {
 void matrix_scan_user(void) {
     achordion_task();
 }
-
-
-typedef struct {
-    bool is_press_action;
-    uint8_t step;
-} tap;
-
-enum {
-    SINGLE_TAP = 1,
-    SINGLE_HOLD,
-    DOUBLE_TAP,
-    DOUBLE_HOLD,
-    DOUBLE_SINGLE_TAP,
-    MORE_TAPS
-};
-
-static tap dance_state[1];
-
-uint8_t dance_step(tap_dance_state_t *state);
-
-uint8_t dance_step(tap_dance_state_t *state) {
-    if (state->count == 1) {
-        if (state->interrupted || !state->pressed) return SINGLE_TAP;
-        else return SINGLE_HOLD;
-    } else if (state->count == 2) {
-        if (state->interrupted) return DOUBLE_SINGLE_TAP;
-        else if (state->pressed) return DOUBLE_HOLD;
-        else return DOUBLE_TAP;
-    }
-    return MORE_TAPS;
-}
-
-
-void on_dance_0(tap_dance_state_t *state, void *user_data);
-void dance_0_finished(tap_dance_state_t *state, void *user_data);
-void dance_0_reset(tap_dance_state_t *state, void *user_data);
-
-void on_dance_0(tap_dance_state_t *state, void *user_data) {
-    if(state->count == 3) {
-        tap_code16(LALT(KC_ESCAPE));
-        tap_code16(LALT(KC_ESCAPE));
-        tap_code16(LALT(KC_ESCAPE));
-    }
-    if(state->count > 3) {
-        tap_code16(LALT(KC_ESCAPE));
-    }
-}
-
-void dance_0_finished(tap_dance_state_t *state, void *user_data) {
-    dance_state[0].step = dance_step(state);
-    switch (dance_state[0].step) {
-        case SINGLE_TAP: register_code16(LALT(KC_ESCAPE)); break;
-        case SINGLE_HOLD: register_code16(KC_LEFT_ALT); break;
-        case DOUBLE_TAP: register_code16(LALT(KC_ESCAPE)); register_code16(LALT(KC_ESCAPE)); break;
-        case DOUBLE_SINGLE_TAP: tap_code16(LALT(KC_ESCAPE)); register_code16(LALT(KC_ESCAPE));
-    }
-}
-
-void dance_0_reset(tap_dance_state_t *state, void *user_data) {
-    wait_ms(10);
-    switch (dance_state[0].step) {
-        case SINGLE_TAP: unregister_code16(LALT(KC_ESCAPE)); break;
-        case SINGLE_HOLD: unregister_code16(KC_LEFT_ALT); break;
-        case DOUBLE_TAP: unregister_code16(LALT(KC_ESCAPE)); break;
-        case DOUBLE_SINGLE_TAP: unregister_code16(LALT(KC_ESCAPE)); break;
-    }
-    dance_state[0].step = 0;
-}
-
-tap_dance_action_t tap_dance_actions[] = {
-        [DANCE_0] = ACTION_TAP_DANCE_FN_ADVANCED(on_dance_0, dance_0_finished, dance_0_reset),
-};
