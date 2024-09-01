@@ -86,6 +86,17 @@ combo_t key_combos[COMBO_COUNT] = {
     COMBO(combo5, LGUI(KC_2)),
 };
 
+uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case MT(MOD_LSFT, KC_T):
+            return g_tapping_term -80;
+        case MT(MOD_LSFT, KC_N):
+            return g_tapping_term -80;
+        default:
+            return g_tapping_term;
+    }
+}
+
 extern rgb_config_t rgb_matrix_config;
 
 void keyboard_post_init_user(void) {
