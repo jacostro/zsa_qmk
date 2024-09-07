@@ -18,23 +18,23 @@ enum custom_keycodes {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT_voyager(
     KC_EQUAL,       KC_1,           KC_2,           KC_3,           KC_4,           KC_5,                                           KC_6,           KC_7,           KC_8,           KC_9,           KC_0,           KC_MINUS,       
-    KC_ESCAPE,      KC_Q,           MT(MOD_RALT, KC_W),ALL_T(KC_F),    KC_P,           KC_B,                                           KC_J,           KC_L,           ALL_T(KC_U),    MT(MOD_RALT, KC_Y),KC_SCLN,        KC_BSLS,        
+    KC_ESCAPE,      KC_Q,           ALL_T(KC_W),    MT(MOD_RALT, KC_F),KC_P,           KC_B,                                           KC_J,           KC_L,           MT(MOD_RALT, KC_U),ALL_T(KC_Y),    KC_SCLN,        KC_BSLS,        
     CW_TOGG,        MT(MOD_LGUI, KC_A),MT(MOD_LALT, KC_R),MT(MOD_LCTL, KC_S),MT(MOD_LSFT, KC_T),MEH_T(KC_G),                                    MEH_T(KC_M),    MT(MOD_LSFT, KC_N),MT(MOD_RCTL, KC_E),MT(MOD_LALT, KC_I),MT(MOD_RGUI, KC_O),KC_QUOTE,       
-    OSM(MOD_RALT),  KC_Z,           KC_X,           KC_C,           KC_D,           KC_V,                                           KC_K,           KC_H,           KC_COMMA,       KC_DOT,         KC_SLASH,       KC_UNDS,        
-                                                    LT(1,KC_BSPC),  LT(4,KC_TAB),                                   KC_ENTER,       LT(2,KC_SPACE)
+    KC_BSPC,        KC_Z,           KC_X,           KC_C,           KC_D,           KC_V,                                           KC_K,           KC_H,           KC_COMMA,       KC_DOT,         KC_SLASH,       KC_UNDS,        
+                                                    LT(1,KC_SPACE), LT(4,KC_TAB),                                   KC_ENTER,       MO(2)
   ),
   [_EXT_LAYER] = LAYOUT_voyager(
     KC_TRANSPARENT, KC_TRANSPARENT, LCTL(LSFT(KC_TAB)),LCTL(KC_H),     LCTL(KC_TAB),   LCTL(KC_Y),                                     KC_TRANSPARENT, LALT(LSFT(KC_TAB)),LGUI(KC_TAB),   LALT(KC_TAB),   KC_TRANSPARENT, KC_TRANSPARENT, 
     KC_TRANSPARENT, LGUI(LCTL(KC_LEFT)),LALT(KC_LEFT),  LCTL(KC_F),     LALT(KC_RIGHT), LGUI(LCTL(KC_RIGHT)),                                KC_INSERT,      KC_HOME,        KC_UP,          KC_END,         LALT(KC_ESCAPE),KC_TRANSPARENT, 
-    KC_BSPC,        KC_LEFT_GUI,    KC_LEFT_ALT,    KC_LEFT_CTRL,   KC_LEFT_SHIFT,  KC_MEH,                                         KC_TAB,         KC_LEFT,        KC_DOWN,        KC_RIGHT,       KC_DELETE,      KC_ENTER,       
-    QK_LLCK,        LCTL(KC_Z),     LCTL(KC_X),     LCTL(KC_C),     LCTL(KC_D),     LCTL(KC_V),                                     KC_SPACE,       KC_PAGE_UP,     LSFT(KC_F10),   KC_PGDN,        LGUI(KC_T),     LGUI(KC_B),     
+    KC_BSPC,        KC_LEFT_GUI,    KC_LEFT_ALT,    KC_LEFT_CTRL,   KC_LEFT_SHIFT,  KC_MEH,                                         KC_BSPC,        KC_LEFT,        KC_DOWN,        KC_RIGHT,       KC_DELETE,      KC_ENTER,       
+    QK_LLCK,        LCTL(KC_Z),     LCTL(KC_X),     LCTL(KC_C),     LCTL(KC_D),     LCTL(KC_V),                                     KC_TAB,         KC_PAGE_UP,     LSFT(KC_F10),   KC_PGDN,        LGUI(KC_T),     LGUI(KC_B),     
                                                     KC_TRANSPARENT, KC_TRANSPARENT,                                 KC_ENTER,       KC_TRANSPARENT
   ),
   [_SYM_LAYER] = LAYOUT_voyager(
     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, ST_MACRO_0,     KC_TRANSPARENT, KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, 
     KC_TRANSPARENT, KC_EXLM,        KC_UNDS,        KC_MINUS,       KC_PLUS,        KC_PERC,                                        KC_TILD,        KC_ASTR,        KC_AMPR,        KC_PIPE,        KC_CIRC,        KC_TRANSPARENT, 
     KC_BSPC,        KC_LCBR,        KC_RCBR,        KC_LPRN,        KC_RPRN,        KC_EQUAL,                                       MEH_T(KC_GRAVE),KC_LEFT_SHIFT,  KC_RIGHT_CTRL,  KC_LEFT_ALT,    KC_RIGHT_GUI,   KC_ENTER,       
-    QK_LLCK,        KC_DLR,         KC_HASH,        KC_LBRC,        KC_RBRC,        KC_AT,                                          KC_SPACE,       KC_SPACE,       KC_LABK,        KC_RABK,        KC_TRANSPARENT, KC_TRANSPARENT, 
+    QK_LLCK,        KC_DLR,         KC_HASH,        KC_LBRC,        KC_RBRC,        KC_AT,                                          KC_TRANSPARENT, KC_BSLS,        KC_LABK,        KC_RABK,        KC_TRANSPARENT, KC_TRANSPARENT, 
                                                     KC_TRANSPARENT, KC_SPACE,                                       KC_TRANSPARENT, KC_TRANSPARENT
   ),
   [_FUN_LAYER] = LAYOUT_voyager(
@@ -45,10 +45,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                                     KC_TRANSPARENT, KC_TRANSPARENT,                                 KC_ENTER,       KC_TRANSPARENT
   ),
   [_NUM_LAYER] = LAYOUT_voyager(
-    KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, LGUI(KC_F8),    KC_TRANSPARENT, KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_TRANSPARENT, KC_SPACE,       KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, 
+    KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, LGUI(KC_F8),    KC_TRANSPARENT, KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, 
     KC_TRANSPARENT, KC_NUM,         KC_AUDIO_VOL_DOWN,KC_MEDIA_PLAY_PAUSE,KC_AUDIO_VOL_UP,KC_MEDIA_NEXT_TRACK,                                KC_MINUS,       KC_5,           KC_6,           KC_9,           KC_ASTR,        KC_SLASH,       
-    KC_BSPC,        KC_LEFT_GUI,    KC_LEFT_ALT,    KC_LEFT_CTRL,   KC_LEFT_SHIFT,  MEH_T(KC_SPACE),                                KC_PLUS,        KC_1,           KC_2,           KC_3,           KC_4,           KC_ENTER,       
-    QK_LLCK,        KC_LBRC,        KC_RBRC,        KC_LPRN,        KC_RPRN,        LT(5,KC_SPACE),                                 KC_SPACE,       KC_7,           KC_8,           KC_KP_DOT,      KC_EQUAL,       KC_CALCULATOR,  
+    KC_BSPC,        KC_LEFT_GUI,    KC_LEFT_ALT,    KC_LEFT_CTRL,   KC_LEFT_SHIFT,  KC_MEH,                                         KC_PLUS,        KC_1,           KC_2,           KC_3,           KC_4,           KC_ENTER,       
+    QK_LLCK,        KC_LBRC,        KC_RBRC,        KC_LPRN,        KC_RPRN,        MO(5),                                          KC_SPACE,       KC_7,           KC_8,           KC_KP_DOT,      KC_EQUAL,       KC_CALCULATOR,  
                                                     KC_TRANSPARENT, KC_TRANSPARENT,                                 KC_ENTER,       KC_0
   ),
   [5] = LAYOUT_voyager(
