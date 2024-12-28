@@ -13,7 +13,7 @@
 #define DEBOUNCE 10
 
 #undef TAPPING_TERM
-#define TAPPING_TERM 180
+#define TAPPING_TERM 200
 
 #define PERMISSIVE_HOLD
 #define COMBO_TERM 70
