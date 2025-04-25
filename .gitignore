@@ -106,6 +106,13 @@ user_song_list.h
 /util/wsl_downloaded
 /util/win_downloaded
 /users/
+/layouts/
+/keyboards/*
+!/keyboards/planck
+!/keyboards/moonlander
+!/keyboards/ergodox_ez
+!/keyboards/voyager
+/keyboards/**/keymaps/*
 # clangd
 compile_commands.json
 .clangd/
