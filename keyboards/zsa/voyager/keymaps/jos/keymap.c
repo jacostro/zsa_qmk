@@ -18,17 +18,16 @@ enum custom_keycodes {
   ST_MACRO_2,
   ST_MACRO_3,
   ST_MACRO_4,
-  MACOS_TOGGLE
 };
 
 
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT_voyager(
-    LALT(KC_SPACE), LGUI(KC_1),     LGUI(KC_2),     LGUI(KC_3),     LGUI(KC_4),     LGUI(KC_5),                                     TG(5),          TG(1),          KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_DELETE,      
+    LGUI(KC_F6),    LGUI(KC_1),     LGUI(KC_2),     LGUI(KC_3),     LGUI(KC_4),     LGUI(KC_5),                                     TG(5),          TG(1),          KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_DELETE,      
     KC_ESCAPE,      KC_Q,           ALL_T(KC_W),    MT(MOD_RALT, KC_F),KC_P,           KC_B,                                           KC_J,           KC_L,           MT(MOD_RALT, KC_U),ALL_T(KC_Y),    KC_SCLN,        KC_BSLS,        
     CW_TOGG,        MT(MOD_LGUI, KC_A),MT(MOD_LALT, KC_R),MT(MOD_LCTL, KC_S),MT(MOD_LSFT, KC_T),MEH_T(KC_G),                                    MEH_T(KC_M),    MT(MOD_LSFT, KC_N),MT(MOD_RCTL, KC_E),MT(MOD_LALT, KC_I),MT(MOD_RGUI, KC_O),KC_QUOTE,       
-    KC_DELETE,      KC_Z,           KC_X,           KC_C,           KC_D,           KC_V,                                           KC_K,           KC_H,           KC_COMMA,       KC_DOT,         KC_SLASH,       KC_UNDS,        
+    KC_CAPS,        KC_Z,           KC_X,           KC_C,           KC_D,           KC_V,                                           KC_K,           KC_H,           KC_COMMA,       KC_DOT,         KC_SLASH,       KC_UNDS,        
                                                     LT(1,KC_BSPC),  LT(4,KC_TAB),                                   KC_ENTER,       LT(2,KC_SPACE)
   ),
   [_EXT_LAYER] = LAYOUT_voyager(
@@ -42,11 +41,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TRANSPARENT, KC_TRANSPARENT, ST_MACRO_0,     ST_MACRO_1,     ST_MACRO_2,     KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_TRANSPARENT, ST_MACRO_3,     ST_MACRO_4,     KC_TRANSPARENT, KC_TRANSPARENT, 
     KC_TRANSPARENT, KC_EXLM,        KC_UNDS,        KC_MINUS,       KC_PLUS,        KC_PERC,                                        KC_TILD,        KC_ASTR,        KC_AMPR,        KC_PIPE,        KC_CIRC,        KC_TRANSPARENT, 
     KC_SPACE,       KC_LCBR,        KC_RCBR,        KC_LPRN,        KC_RPRN,        KC_EQUAL,                                       MEH_T(KC_GRAVE),KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_ENTER,       
-    QK_LLCK,        KC_DLR,         KC_HASH,        KC_LBRC,        KC_RBRC,        KC_AT,                                          KC_BSLS,        KC_BSPC,        KC_LABK,        KC_RABK,        KC_TRANSPARENT, KC_TRANSPARENT, 
+    QK_LLCK,        KC_DLR,         KC_HASH,        KC_LBRC,        KC_RBRC,        KC_AT,                                          KC_SPACE,       KC_BSPC,        KC_LABK,        KC_RABK,        KC_TRANSPARENT, KC_TRANSPARENT, 
                                                     KC_TRANSPARENT, KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_TRANSPARENT
   ),
   [_FUN_LAYER] = LAYOUT_voyager(
-    RGB_TOG,        TOGGLE_LAYER_COLOR,RGB_MODE_FORWARD,RGB_VAD,        RGB_VAI,        RGB_SLD,                                        KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, MACOS_TOGGLE, QK_BOOT,        
+    RGB_TOG,        TOGGLE_LAYER_COLOR,RGB_MODE_FORWARD,RGB_VAD,        RGB_VAI,        RGB_SLD,                                        KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, QK_BOOT,        
     KC_TRANSPARENT, KC_MEDIA_STOP,  KC_MEDIA_PREV_TRACK,KC_MEDIA_PLAY_PAUSE,KC_MEDIA_NEXT_TRACK,KC_AUDIO_MUTE,                                  KC_TRANSPARENT, KC_F5,          KC_F6,          KC_F9,          KC_TRANSPARENT, QK_DYNAMIC_TAPPING_TERM_UP,
     KC_SPACE,       KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, MEH_T(KC_AUDIO_VOL_UP),                                KC_F11,         KC_F1,          KC_F2,          KC_F3,          KC_F4,          QK_DYNAMIC_TAPPING_TERM_DOWN,
     QK_LLCK,        KC_TRANSPARENT, KC_TRANSPARENT, LGUI(KC_F8),    LGUI(LCTL(KC_V)),KC_AUDIO_VOL_DOWN,                                KC_F10,         KC_F7,          KC_F8,          KC_F12,         KC_TRANSPARENT, QK_DYNAMIC_TAPPING_TERM_PRINT,
@@ -79,15 +78,9 @@ const uint16_t PROGMEM combo0[] = { KC_H, KC_COMMA, COMBO_END};
 const uint16_t PROGMEM combo1[] = { KC_X, KC_C, COMBO_END};
 
 combo_t key_combos[COMBO_COUNT] = {
-    COMBO(combo0, LALT(KC_SPACE)),
+    COMBO(combo0, LGUI(KC_SPACE)),
     COMBO(combo1, LGUI(KC_2)),
 };
-
-void caps_word_set_user(bool active);
-void set_macos_led(bool active);
-void switch_macos(void);
-uint16_t get_macos_keycode(uint16_t keycode);
-
 
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
@@ -171,22 +164,7 @@ bool rgb_matrix_indicators_user(void) {
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  uint16_t macos_keycode = get_macos_keycode(keycode);
-  if (macos_keycode != keycode) {
-    if (record->event.pressed) {
-      register_code(macos_keycode);
-    } else {
-      unregister_code(macos_keycode);
-    }
-    return false;
-  }
-
   switch (keycode) {
-    case MACOS_TOGGLE:
-    if (record->event.pressed) {
-      switch_macos();
-    }
-    break;
     case ST_MACRO_0:
     if (record->event.pressed) {
       SEND_STRING(SS_LSFT(SS_TAP(X_1))SS_DELAY(100)  SS_TAP(X_EQUAL));
@@ -222,6 +200,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   return true;
 }
 
+/*
 layer_state_t layerstate_set_user(layer_state_t state) {
   state = update_tri_layer_state(state, _EXT_LAYER, _SYM_LAYER, _FUN_LAYER);
   
@@ -237,43 +216,31 @@ layer_state_t layerstate_set_user(layer_state_t state) {
 #endif
   return state;
 }
-
-
-//--------------------------------
-
-// Linux-MacOS shift overrides
-bool macos = false;
-
-void switch_macos(void) {
-  macos = !macos;
-  set_macos_led(macos);
-}
-
-uint16_t get_macos_keycode(uint16_t keycode) {
-
-  if (!macos || (keycode & (QK_LCTL | QK_RCTL | QK_LALT | QK_RALT | QK_LGUI | QK_RGUI)) == 0) return keycode;
-
-  if (keycode == LCTL(KC_SPACE)) return LGUI(KC_SPACE);
-
-  uint16_t mod = 0;
-
-  if ((keycode & QK_LCTL) == QK_LCTL) mod |= QK_LGUI;
-  if ((keycode & QK_RCTL) == QK_RCTL) mod |= QK_RGUI;
-  if ((keycode & QK_LALT) == QK_LALT) mod |= QK_LCTL;
-  if ((keycode & QK_RALT) == QK_RALT) mod |= QK_RCTL;
-  if ((keycode & QK_LGUI) == QK_LGUI) mod |= QK_LALT;
-  if ((keycode & QK_RGUI) == QK_RGUI) mod |= QK_RALT;
-
-  return (keycode & ~(QK_LCTL | QK_RCTL | QK_LALT | QK_RALT | QK_LGUI | QK_RGUI)) | mod;
-}
-
+*/
 #ifdef STATUS_LED_1
 // LED 1 indicates when Caps word is active.
 void caps_word_set_user(bool active) {
   STATUS_LED_1(active);
 }
+#endif
 
-void set_macos_led(bool active) {
-  STATUS_LED_3(active);
+bool caps_word_press_user(uint16_t keycode) {
+    switch (keycode) {
+        // Keycodes that continue Caps Word, with shift applied.
+        case KC_A ... KC_Z:
+            add_weak_mods(MOD_BIT(KC_LSFT));  // Apply shift to next key.
+            return true;
+
+        // Keycodes that continue Caps Word, without shifting.
+        case KC_1 ... KC_0:
+        case KC_BSPC:
+        case KC_DEL:
+        case KC_MINS:
+        case KC_UNDS:
+            return true;
+
+        default:
+            return false;  // Deactivate Caps Word.
+    }
 }
-#endif  // STATUS_LED_1
+
