@@ -210,6 +210,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   int top_layer = get_highest_layer(state);
 
   STATUS_LED_3(top_layer == _NUMPAD_LAYER);
+  STATUS_LED_2(top_layer == _FUN_LAYER);
   STATUS_LED_4(top_layer == _FUN_LAYER);
 #endif
 #endif
