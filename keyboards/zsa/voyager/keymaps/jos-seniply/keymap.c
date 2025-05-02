@@ -136,7 +136,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
   // Clear combined one-shot mods when a non-mod key is pressed, adding them first as weak mods
   if (record->event.pressed && os_mods && !(keycode >= QK_ONE_SHOT_MOD && keycode <= QK_ONE_SHOT_MOD_MAX)) {
-    add_weak_mods(os_mods);
+    if ((os_mods & (os_mods - 1)) != 0) {
+      // if two or more mods set, otherwise we leave it for QMK to handle
+      add_weak_mods(os_mods);
+    }
     os_mods = 0;
   }
 
@@ -146,13 +149,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 //--- CUSTOM MODIFICATIONS ---
 
 layer_state_t layer_state_set_user(layer_state_t state) {
-  state = update_tri_layer_state(state, _EXT_LAYER, _SYM_LAYER, _FUN_LAYER);
-
-#ifdef STATUS_LED_4
-  int top_layer = get_highest_layer(state);
-  STATUS_LED_4(top_layer == _FUN_LAYER);
-#endif
-  return state;
+  return update_tri_layer_state(state, _EXT_LAYER, _SYM_LAYER, _FUN_LAYER);
 }
 
 #ifdef STATUS_LED_1
