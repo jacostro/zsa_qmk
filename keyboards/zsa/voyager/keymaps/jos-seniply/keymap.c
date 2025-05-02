@@ -23,9 +23,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
   [_EXT_LAYER] = LAYOUT_voyager(
     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,
-    KC_TRANSPARENT, KC_NO,          LCTL(KC_H),     LCTL(KC_F),     MAC_SPOTLIGHT,  KC_INSERT,                                      KC_PAGE_UP,     KC_HOME,        KC_UP,          KC_END,         KC_CAPS,        KC_NO,
-    KC_NO,          OSM(MOD_LGUI),  OSM(MOD_LALT),  OSM(MOD_LCTL),  OSM(MOD_LSFT),  OSM(MOD_HYPR),                                  KC_PGDN,        KC_LEFT,        KC_DOWN,        KC_RIGHT,       KC_DELETE,      KC_LEFT_SHIFT,
-    KC_NO,          LCTL(KC_Z),     LCTL(KC_X),     LCTL(KC_C),     KC_LEFT_GUI,    LCTL(KC_V),                                     KC_NO,          KC_BSPC,        KC_TAB,         KC_NO,          KC_PSCR,        KC_RIGHT_CTRL,
+    KC_TRANSPARENT, KC_MAIL,        LCTL(KC_H),     LCTL(KC_F),     MAC_SPOTLIGHT,  KC_INSERT,                                      KC_PAGE_UP,     KC_HOME,        KC_UP,          KC_END,         KC_CAPS,        KC_WWW_FAVORITES,
+    KC_MY_COMPUTER, OSM(MOD_LGUI),  OSM(MOD_LALT),  OSM(MOD_LCTL),  OSM(MOD_LSFT),  OSM(MOD_HYPR),                                  KC_PGDN,        KC_LEFT,        KC_DOWN,        KC_RIGHT,       KC_DELETE,      KC_NO,
+    KC_WWW_SEARCH,  LCTL(KC_Z),     LCTL(KC_X),     LCTL(KC_C),     KC_LEFT_GUI,    LCTL(KC_V),                                     KC_NO,          KC_BSPC,        KC_TAB,         KC_NO,          KC_PSCR,        KC_RIGHT_CTRL,
                                                     KC_TRANSPARENT, KC_TRANSPARENT,                                 KC_ENTER,       KC_TRANSPARENT
   ),
   [_SYM_LAYER] = LAYOUT_voyager(
@@ -43,14 +43,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                                     KC_TRANSPARENT, KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_0
   ),
   [_FUN_LAYER] = LAYOUT_voyager(
-    KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, QK_BOOT,
-    TOGGLE_LAYER_COLOR,KC_MEDIA_STOP,  KC_MEDIA_PREV_TRACK,KC_MEDIA_PLAY_PAUSE,KC_MEDIA_NEXT_TRACK,KC_TRANSPARENT,                                 KC_F12,         KC_F7,          KC_F8,          KC_F9,          KC_NO,          KC_NO,
-    RGB_TOG,        KC_LEFT_GUI,    KC_LEFT_ALT,    KC_LEFT_CTRL,   KC_LEFT_SHIFT,  KC_HYPR,                                        KC_F11,         KC_F4,          KC_F5,          KC_F6,          KC_NO,          KC_NO,
-    RGB_MODE_FORWARD,KC_AUDIO_MUTE,  KC_AUDIO_VOL_DOWN,LCTL(LSFT(KC_C)),KC_AUDIO_VOL_UP,LCTL(LSFT(KC_V)),                                KC_F10,         KC_F1,          KC_F2,          KC_F3,          KC_NO,          KC_NO,
+    KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, AS_TOGG,        QK_BOOT,
+    TOGGLE_LAYER_COLOR,KC_MEDIA_STOP,  KC_MEDIA_PREV_TRACK,KC_MEDIA_PLAY_PAUSE,KC_MEDIA_NEXT_TRACK,KC_TRANSPARENT,                                 KC_F12,         KC_F7,          KC_F8,          KC_F9,          KC_NO,          AS_UP,
+    RGB_TOG,        KC_LEFT_GUI,    KC_LEFT_ALT,    KC_LEFT_CTRL,   KC_LEFT_SHIFT,  KC_HYPR,                                        KC_F11,         KC_F4,          KC_F5,          KC_F6,          KC_NO,          AS_DOWN,
+    RGB_MODE_FORWARD,KC_AUDIO_MUTE,  KC_AUDIO_VOL_DOWN,LCTL(LSFT(KC_C)),KC_AUDIO_VOL_UP,LCTL(LSFT(KC_V)),                                KC_F10,         KC_F1,          KC_F2,          KC_F3,          KC_NO,          AS_RPT,
                                                     KC_TRANSPARENT, KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_TRANSPARENT
   ),
 };
-
 
 
 extern rgb_config_t rgb_matrix_config;
@@ -127,25 +126,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       return false;
 
     // Handle one-shot modifiers
-    case OSM(MOD_LSFT):
-    case OSM(MOD_LCTL):
-    case OSM(MOD_LALT):
-    case OSM(MOD_LGUI):
-    case OSM(MOD_RSFT):
-    case OSM(MOD_RCTL):
-    case OSM(MOD_RALT):
-    case OSM(MOD_RGUI):
+    case QK_ONE_SHOT_MOD ... QK_ONE_SHOT_MOD_MAX:
       if (record->event.pressed) {
         // When pressed, add the mod to our combined mods
-        os_mods |= mod_config(keycode & 0xFF);
-        set_oneshot_mods(os_mods);
-        return false;
+        os_mods |= mod_config(QK_ONE_SHOT_MOD_GET_MODS(keycode));
       }
       return true;
   }
 
-  // Clear combined one-shot mods when a non-mod key is pressed
+  // Clear combined one-shot mods when a non-mod key is pressed, adding them first as weak mods
   if (record->event.pressed && os_mods && !(keycode >= QK_ONE_SHOT_MOD && keycode <= QK_ONE_SHOT_MOD_MAX)) {
+    add_weak_mods(os_mods);
     os_mods = 0;
   }
 
