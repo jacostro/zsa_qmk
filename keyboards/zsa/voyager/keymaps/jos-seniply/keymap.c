@@ -52,6 +52,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 
+
 extern rgb_config_t rgb_matrix_config;
 
 void keyboard_post_init_user(void) {
@@ -112,8 +113,17 @@ bool rgb_matrix_indicators_user(void) {
   return true;
 }
 
+#ifdef STATUS_LED_2
+void os_mods_changed(uint8_t mods) {
+    STATUS_LED_2(mods != 0);
+}
+#else
+#define os_mods_changed(mods)
+#endif
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   static uint8_t os_mods = 0;
+  static uint16_t os_time = 0;
 
   switch (keycode) {
     case MAC_SPOTLIGHT:
@@ -128,19 +138,32 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     // Handle one-shot modifiers
     case QK_ONE_SHOT_MOD ... QK_ONE_SHOT_MOD_MAX:
       if (record->event.pressed) {
+#if (defined(ONESHOT_TIMEOUT) && (ONESHOT_TIMEOUT > 0))
+        if (TIMER_DIFF_16(timer_read(), os_time) >= ONESHOT_TIMEOUT) {
+            os_mods = 0;
+        }
+#endif
         // When pressed, add the mod to our combined mods
         os_mods |= mod_config(QK_ONE_SHOT_MOD_GET_MODS(keycode));
+        os_time = timer_read();
+        os_mods_changed(os_mods);
       }
       return true;
   }
 
   // Clear combined one-shot mods when a non-mod key is pressed, adding them first as weak mods
-  if (record->event.pressed && os_mods && !(keycode >= QK_ONE_SHOT_MOD && keycode <= QK_ONE_SHOT_MOD_MAX)) {
+  if (record->event.pressed && os_mods) {
+#if (defined(ONESHOT_TIMEOUT) && (ONESHOT_TIMEOUT > 0))
+    if (TIMER_DIFF_16(timer_read(), os_time) >= ONESHOT_TIMEOUT) {
+      os_mods = 0;
+    }
+#endif
     if ((os_mods & (os_mods - 1)) != 0) {
       // if two or more mods set, otherwise we leave it for QMK to handle
       add_weak_mods(os_mods);
     }
     os_mods = 0;
+    os_mods_changed(0);
   }
 
   return true;
@@ -180,4 +203,3 @@ bool caps_word_press_user(uint16_t keycode){
             return false;  // Deactivate Caps Word.
     }
 }
-
