@@ -18,14 +18,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_BSPC,        LGUI(KC_1),     LGUI(KC_2),     LGUI(KC_3),     LGUI(KC_4),     LGUI(KC_5),                                     TG(1),          TG(3),          TG(2),          TG(4),          KC_TRANSPARENT, KC_DELETE,
     KC_ESCAPE,      KC_Q,           KC_W,           KC_F,           KC_P,           KC_B,                                           KC_J,           KC_L,           KC_U,           KC_Y,           KC_SCLN,        KC_BSLS,
     CW_TOGG,        KC_A,           KC_R,           KC_S,           KC_T,           KC_G,                                           KC_M,           KC_N,           KC_E,           KC_I,           KC_O,           KC_QUOTE,
-    OSM(MOD_RALT),  KC_Z,           KC_X,           KC_C,           KC_D,           KC_V,                                           KC_K,           KC_H,           KC_COMMA,       KC_DOT,         KC_SLASH,       OSM(MOD_RALT),
+    KC_RIGHT_ALT,   KC_Z,           KC_X,           KC_C,           KC_D,           KC_V,                                           KC_K,           KC_H,           KC_COMMA,       KC_DOT,         KC_SLASH,       KC_RIGHT_ALT,
                                                     MO(1),          LT(3,KC_TAB),                                   KC_ENTER,       LT(2,KC_SPACE)
   ),
   [_EXT_LAYER] = LAYOUT_voyager(
     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,
-    KC_TRANSPARENT, KC_MAIL,        LCTL(KC_H),     LCTL(KC_F),     MAC_SPOTLIGHT,  KC_INSERT,                                      KC_PAGE_UP,     KC_HOME,        KC_UP,          KC_END,         KC_CAPS,        KC_WWW_FAVORITES,
+    KC_TRANSPARENT, KC_MAIL,        LCTL(KC_H),     LCTL(KC_F),     KC_WWW_SEARCH,  KC_INSERT,                                      KC_PAGE_UP,     KC_HOME,        KC_UP,          KC_END,         KC_CAPS,        KC_WWW_FAVORITES,
     KC_MY_COMPUTER, OSM(MOD_LGUI),  OSM(MOD_LALT),  OSM(MOD_LCTL),  OSM(MOD_LSFT),  OSM(MOD_HYPR),                                  KC_PGDN,        KC_LEFT,        KC_DOWN,        KC_RIGHT,       KC_DELETE,      KC_NO,
-    KC_WWW_SEARCH,  LCTL(KC_Z),     LCTL(KC_X),     LCTL(KC_C),     KC_LEFT_GUI,    LCTL(KC_V),                                     KC_NO,          KC_BSPC,        KC_TAB,         KC_NO,          KC_PSCR,        KC_RIGHT_CTRL,
+    KC_NO,          LCTL(KC_Z),     LCTL(KC_X),     LCTL(KC_C),     KC_LEFT_GUI,    LCTL(KC_V),                                     KC_NO,          KC_BSPC,        KC_TAB,         KC_NO,          KC_PSCR,        KC_RIGHT_CTRL,
                                                     KC_TRANSPARENT, KC_TRANSPARENT,                                 KC_ENTER,       KC_TRANSPARENT
   ),
   [_SYM_LAYER] = LAYOUT_voyager(
