@@ -120,10 +120,11 @@ void os_mods_changed(uint8_t mods) {
 #define os_mods_changed(mods)
 #endif
 
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  static uint8_t os_mods = 0;
-  static uint16_t os_time = 0;
+static uint8_t os_mods = 0;
+static uint32_t os_time = 0;
+static bool os_mods_reset = false;
 
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case RGB_SLD:
       if (record->event.pressed) {
@@ -134,14 +135,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     // Handle one-shot modifiers
     case QK_ONE_SHOT_MOD ... QK_ONE_SHOT_MOD_MAX:
       if (record->event.pressed) {
-#if (defined(ONESHOT_TIMEOUT) && (ONESHOT_TIMEOUT > 0))
-        if (TIMER_DIFF_16(timer_read(), os_time) >= ONESHOT_TIMEOUT) {
-            os_mods = 0;
-        }
-#endif
         // When pressed, add the mod to our combined mods
         os_mods |= mod_config(QK_ONE_SHOT_MOD_GET_MODS(keycode));
-        os_time = timer_read();
+        os_time = timer_read32();
         os_mods_changed(os_mods);
       }
       return true;
@@ -149,23 +145,34 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
   // Clear combined one-shot mods when a non-mod key is pressed, adding them first as weak mods
   if (record->event.pressed && os_mods) {
-#if (defined(ONESHOT_TIMEOUT) && (ONESHOT_TIMEOUT > 0))
-    if (TIMER_DIFF_16(timer_read(), os_time) >= ONESHOT_TIMEOUT) {
-      os_mods = 0;
-    }
-#endif
     if ((os_mods & (os_mods - 1)) != 0) {
       // if two or more mods set, otherwise we leave it for QMK to handle
       add_weak_mods(os_mods);
+      os_mods = 0;
+      os_mods_reset = true;
+#if (defined(ONESHOT_TIMEOUT) && (ONESHOT_TIMEOUT > 0))
+      os_time = timer_read32() - ONESHOT_TIMEOUT / 4;
+#endif
     }
-    os_mods = 0;
-    os_mods_changed(0);
   }
 
   return true;
 }
 
-//--- CUSTOM MODIFICATIONS ---
+// executed at the end of the main loop
+#if (defined(ONESHOT_TIMEOUT) && (ONESHOT_TIMEOUT > 0))
+void housekeeping_task_user(void) {
+    if ((os_mods || os_mods_reset) && timer_elapsed32(os_time) >= ONESHOT_TIMEOUT) {
+      os_mods_reset = false;
+      os_mods = 0;
+      os_mods_changed(0);
+      if (get_weak_mods() != 0) {
+        clear_weak_mods();
+      }
+      send_keyboard_report();
+    }
+}
+#endif
 
 layer_state_t layer_state_set_user(layer_state_t state) {
   return update_tri_layer_state(state, _EXT_LAYER, _SYM_LAYER, _FUN_LAYER);
