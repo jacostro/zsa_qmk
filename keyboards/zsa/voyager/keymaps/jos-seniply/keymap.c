@@ -151,7 +151,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       os_mods = 0;
       os_mods_reset = true;
 #if (defined(ONESHOT_TIMEOUT) && (ONESHOT_TIMEOUT > 0))
-      os_time = timer_read32() - ONESHOT_TIMEOUT / 4;
+      // use OSM timeout to run housekeeping_task_user() with 200ms delay
+      os_time = timer_read32() - ONESHOT_TIMEOUT + 200;
 #endif
     }
   }
