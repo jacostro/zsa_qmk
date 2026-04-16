@@ -213,14 +213,10 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     state = update_tri_layer_state(state, EXT_LAYER, SYM_LAYER, FUN_LAYER);
 
   #ifdef STATUS_LED2
-    switch (get_highest_layer(state)) {
-        case FUN_LAYER:
-          STATUS_LED2(true);
-          break;
-        default:
-          STATUS_LED2(false);
-          break;
-    }
+    if (IS_LAYER_ON_STATE(state, FUN_LAYER))
+      STATUS_LED2(true);
+    else
+      STATUS_LED2(false);
   #endif
 
     return state;
